@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronRight, Plus, X, PieChart, Coins, CalendarClock } from 'lucide-react';
+import { ChevronDown, ChevronRight, Plus, X, PieChart, Coins, CalendarClock, Image as ImageIcon } from 'lucide-react';
 import { useAppState, type Allocation } from '../context/AppContext';
 
 
@@ -11,7 +11,8 @@ export default function LeftPanel() {
   const [openSections, setOpenSections] = useState({
     supply: true,
     distribution: true,
-    vesting: false
+    vesting: false,
+    metadata: true
   });
 
   const toggleSection = (section: keyof typeof openSections) => {
@@ -45,7 +46,7 @@ export default function LeftPanel() {
       <div className="border-b border-gray-100">
         <button
           onClick={() => toggleSection('supply')}
-          className="w-full flex items-center justify-between p-4 bg-gray-50/50 hover:bg-gray-50 transition-colors"
+          className="w-full hover:cursor-pointer flex items-center justify-between p-4 bg-gray-50/50 hover:bg-gray-50 transition-colors"
         >
           <div className="flex items-center gap-2">
             <Coins size={16} className="text-blue-500" />
@@ -64,9 +65,15 @@ export default function LeftPanel() {
               <label className="block text-xs font-semibold text-gray-500 mb-1">Symbol</label>
               <input type="text" className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-gray-700" value={tokenInfo.symbol} onChange={e => handleSupplyUpdate('symbol', e.target.value.toUpperCase())} />
             </div>
-            <div>
-              <label className="block text-xs font-semibold text-gray-500 mb-1">Total Supply</label>
-              <input type="number" className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-gray-700 font-mono" value={tokenInfo.supply} onChange={e => handleSupplyUpdate('supply', Number(e.target.value))} />
+            <div className="flex gap-2">
+              <div className="flex-1">
+                <label className="block text-xs font-semibold text-gray-500 mb-1">Total Supply</label>
+                <input type="number" className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-gray-700 font-mono" value={tokenInfo.supply} onChange={e => handleSupplyUpdate('supply', Number(e.target.value))} />
+              </div>
+              <div className="w-24 shrink-0">
+                <label className="block text-xs font-semibold text-gray-500 mb-1">Decimals</label>
+                <input type="number" min="0" max="18" className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-gray-700 font-mono" value={tokenInfo.decimals} onChange={e => handleSupplyUpdate('decimals', Number(e.target.value))} />
+              </div>
             </div>
             <div>
               <label className="block text-xs font-semibold text-gray-500 mb-1">Network</label>
@@ -81,11 +88,50 @@ export default function LeftPanel() {
         )}
       </div>
 
-      {/* 2. DISTRIBUTION (100%) */}
+      {/* 2. METADATA */}
+      <div className="border-b border-gray-100">
+        <button
+          onClick={() => toggleSection('metadata')}
+          className="w-full hover:cursor-pointer flex items-center justify-between p-4 bg-gray-50/50 hover:bg-gray-50 transition-colors"
+        >
+          <div className="flex items-center gap-2">
+            <ImageIcon size={16} className="text-pink-500" />
+            <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wider">Metadata</h2>
+          </div>
+          {openSections.metadata ? <ChevronDown size={16} className="text-gray-400" /> : <ChevronRight size={16} className="text-gray-400" />}
+        </button>
+
+        {openSections.metadata && (
+          <div className="p-4 space-y-4 bg-white">
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 mb-1">Logo URL</label>
+              <input
+                type="text"
+                placeholder="https://cdn.tokenlab.app/logo.png"
+                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-gray-700"
+                value={tokenInfo.logoUrl}
+                onChange={e => handleSupplyUpdate('logoUrl', e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 mb-1">Description <span className="text-gray-400 font-normal">(Optional)</span></label>
+              <textarea
+                rows={3}
+                placeholder="A brief description of your token's utility or vision..."
+                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-gray-700 resize-none"
+                value={tokenInfo.description}
+                onChange={e => handleSupplyUpdate('description', e.target.value)}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* 3. DISTRIBUTION (100%) */}
       <div className="border-b border-gray-100">
         <button
           onClick={() => toggleSection('distribution')}
-          className="w-full flex items-center justify-between p-4 bg-gray-50/50 hover:bg-gray-50 transition-colors"
+          className="w-full hover:cursor-pointer flex items-center justify-between p-4 bg-gray-50/50 hover:bg-gray-50 transition-colors"
         >
           <div className="flex items-center gap-2">
             <PieChart size={16} className="text-purple-500" />
@@ -134,11 +180,11 @@ export default function LeftPanel() {
         )}
       </div>
 
-      {/* 3. VESTING */}
-      <div className="border-b border-gray-100">
+      {/* 4. VESTING */}
+      <div className="border-b border-gray-100 flex-1">
         <button
           onClick={() => toggleSection('vesting')}
-          className="w-full flex items-center justify-between p-4 bg-gray-50/50 hover:bg-gray-50 transition-colors"
+          className="w-full hover:cursor-pointer flex items-center justify-between p-4 bg-gray-50/50 hover:bg-gray-50 transition-colors"
         >
           <div className="flex items-center gap-2">
             <CalendarClock size={16} className="text-yellow-500" />

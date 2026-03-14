@@ -12,7 +12,10 @@ export interface TokenInfo {
   name: string;
   symbol: string;
   supply: number;
+  decimals: number;
   network: string;
+  logoUrl: string;
+  description: string;
 }
 
 export interface Allocation {
@@ -45,7 +48,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     name: 'MyToken',
     symbol: 'MTK',
     supply: 1000000000, // 1 Billion standard
-    network: 'Ethereum'
+    decimals: 18,
+    network: 'Ethereum',
+    logoUrl: '',
+    description: ''
   });
   const [allocations, setAllocations] = useState<Allocation[]>([
     { id: '1', name: 'Community', percentage: 40, color: '#3b82f6' }, // blue-500

@@ -49,14 +49,31 @@ export default function RightPanel() {
         </span>
       </div>
 
-      {/* 1. Token Supply Details */}
+      {/* 1. Token Supply / Metadata Details */}
       <div className="p-5 border-b border-gray-100 bg-gray-50">
-        <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Token Supply</h3>
-        <div className="flex justify-between items-center mb-1">
-          <span className="font-bold text-gray-800 text-lg leading-none">{tokenInfo.name} ({tokenInfo.symbol})</span>
-          <span className="text-xs font-bold text-blue-600 bg-blue-100 px-2 py-0.5 rounded">{tokenInfo.network}</span>
+        <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Token Identity</h3>
+        <div className="flex items-center gap-3 mb-2">
+          {tokenInfo.logoUrl ? (
+            <img src={tokenInfo.logoUrl} alt="Logo" className="w-10 h-10 rounded-full object-cover border border-gray-200 bg-white shrink-0 shadow-sm" />
+          ) : (
+            <div className="w-10 h-10 rounded-full border border-gray-200 bg-white flex items-center justify-center shrink-0 shadow-sm text-gray-400 font-bold text-lg">
+              {tokenInfo.symbol.charAt(0)}
+            </div>
+          )}
+          <div className="flex-1 min-w-0">
+            <div className="flex justify-between items-center mb-0.5">
+              <span className="font-bold text-gray-800 text-lg leading-none truncate">{tokenInfo.name} <span className="text-gray-500 font-medium text-sm">({tokenInfo.symbol})</span></span>
+              <span className="text-xs font-bold text-blue-600 bg-blue-100 px-2 py-0.5 rounded">{tokenInfo.network}</span>
+            </div>
+            <p className="text-xs font-semibold text-gray-500">{tokenInfo.supply.toLocaleString()} Total Max Supply</p>
+          </div>
         </div>
-        <p className="text-xs font-semibold text-gray-500">{tokenInfo.supply.toLocaleString()} Total Max Supply</p>
+        
+        {tokenInfo.description && (
+          <p className="text-xs text-gray-600 mt-2 line-clamp-2 leading-relaxed italic">
+            "{tokenInfo.description}"
+          </p>
+        )}
       </div>
 
       {/* 2. Tokenomics Allocation (100%) */}
