@@ -21,14 +21,14 @@ export default function LeftPanel() {
     setOpenSections(prev => ({ ...prev, [section]: !prev[section] }));
   };
 
-  const handleSupplyUpdate = (field: keyof typeof tokenInfo, value: string | number) => {
+  const handleSupplyUpdate = (field: keyof typeof tokenInfo, value: string | number | boolean) => {
     setTokenInfo({ ...tokenInfo, [field]: value });
   };
 
   const handleNetworkChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const network = e.target.value;
     handleSupplyUpdate('network', network);
-    
+
     if (switchChain) {
       const chainMap: Record<string, number> = {
         'Sepolia': 11155111,
@@ -40,7 +40,7 @@ export default function LeftPanel() {
       };
       const chainId = chainMap[network];
       if (chainId) {
-        switchChain({ chainId }, { onError: () => {} });
+        switchChain({ chainId }, { onError: () => { } });
       }
     }
   };
@@ -51,7 +51,7 @@ export default function LeftPanel() {
 
   const addAllocation = () => {
     const newId = Math.random().toString(36).substr(2, 9);
-    setAllocations([...allocations, { id: newId, name: 'New Allocation', percentage: 0, color: '#94a3b8' }]);
+    setAllocations([...allocations, { id: newId, name: 'New Allocation', percentage: 0, color: '#94a3b8', wallet: '' }]);
   };
 
   const removeAllocation = (id: string) => {
@@ -107,6 +107,26 @@ export default function LeftPanel() {
                 <option>Polygon</option>
                 <option>Optimism</option>
               </select>
+            </div>
+            <div className="flex gap-4 pt-1">
+              <label className="flex items-center gap-2 text-xs font-semibold text-gray-600 cursor-pointer">
+                <input
+                  type="checkbox"
+                  className="w-4 h-4 rounded border-gray-300 text-blue-500 focus:ring-blue-500"
+                  checked={tokenInfo.mintable}
+                  onChange={(e) => handleSupplyUpdate('mintable', e.target.checked)}
+                />
+                Mintable
+              </label>
+              <label className="flex items-center gap-2 text-xs font-semibold text-gray-600 cursor-pointer">
+                <input
+                  type="checkbox"
+                  className="w-4 h-4 rounded border-gray-300 text-blue-500 focus:ring-blue-500"
+                  checked={tokenInfo.burnable}
+                  onChange={(e) => handleSupplyUpdate('burnable', e.target.checked)}
+                />
+                Burnable
+              </label>
             </div>
           </div>
         )}
@@ -171,33 +191,44 @@ export default function LeftPanel() {
               <span>{totalAllocation}% {isValidAllocation ? '✓' : '(Must equal 100%)'}</span>
             </div>
 
-            <div className="space-y-2 mb-3">
+            <div className="space-y-3 mb-3 text-xs">
               {allocations.map((alloc) => (
-                <div key={alloc.id} className="flex items-center gap-2 group">
-                  <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: alloc.color }}></div>
-                  <input
-                    type="text"
-                    className="flex-1 px-2 py-1.5 bg-gray-50 border border-gray-200 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-700"
-                    value={alloc.name}
-                    onChange={e => handleAllocationChange(alloc.id, 'name', e.target.value)}
-                  />
-                  <div className="relative w-16 shrink-0">
-                    <input
-                      type="number"
-                      className="w-full px-2 py-1.5 pr-6 bg-gray-50 border border-gray-200 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-700 font-mono"
-                      value={alloc.percentage}
-                      onChange={e => handleAllocationChange(alloc.id, 'percentage', Number(e.target.value))}
-                    />
-                    <span className="absolute right-2 top-1.5 text-xs text-gray-400">%</span>
-                  </div>
-                  <button onClick={() => removeAllocation(alloc.id)} className="text-gray-300 hover:text-red-500 transition-colors px-1 opacity-0 group-hover:opacity-100">
-                    <X size={14} />
+                <div key={alloc.id} className="group relative p-3 border border-gray-100 rounded-lg bg-gray-50/50 hover:bg-gray-50 transition-colors">
+                  <button onClick={() => removeAllocation(alloc.id)} className="hover:cursor-pointer absolute -top-2 -right-2 w-5 h-5 bg-white border border-gray-200 text-gray-400 hover:text-red-500 hover:border-red-200 rounded-full flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 shadow-sm">
+                    <X size={12} />
                   </button>
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-3 h-3 rounded-full shrink-0 shadow-inner" style={{ backgroundColor: alloc.color }}></div>
+                    <input
+                      type="text"
+                      className="flex-1 px-2 py-1.5 bg-white border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-700 font-medium"
+                      value={alloc.name}
+                      onChange={e => handleAllocationChange(alloc.id, 'name', e.target.value)}
+                    />
+                    <div className="relative w-16 shrink-0">
+                      <input
+                        type="number"
+                        className="w-full px-2 py-1.5 pr-6 bg-white border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-700 font-mono text-right"
+                        value={alloc.percentage}
+                        onChange={e => handleAllocationChange(alloc.id, 'percentage', Number(e.target.value))}
+                      />
+                      <span className="absolute right-2 top-1.5 text-gray-400">%</span>
+                    </div>
+                  </div>
+                  <div>
+                    <input
+                      type="text"
+                      placeholder="Receiving Wallet Address (0x...)"
+                      className="w-full px-2 py-1.5 bg-white border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-600 font-mono text-[10px]"
+                      value={alloc.wallet || ''}
+                      onChange={e => handleAllocationChange(alloc.id, 'wallet', e.target.value)}
+                    />
+                  </div>
                 </div>
               ))}
             </div>
 
-            <button onClick={addAllocation} className="w-full py-2 border border-dashed border-gray-300 rounded-lg text-xs font-semibold text-gray-500 hover:text-blue-600 hover:border-blue-400 hover:bg-blue-50 flex items-center justify-center gap-1 transition-all">
+            <button onClick={addAllocation} className="hover:cursor-pointer w-full py-2 border border-dashed border-gray-300 rounded-lg text-xs font-semibold text-gray-500 hover:text-blue-600 hover:border-blue-400 hover:bg-blue-50 flex items-center justify-center gap-1 transition-all">
               <Plus size={14} /> Add Allocation
             </button>
           </div>

@@ -13,6 +13,8 @@ export interface TokenInfo {
   symbol: string;
   supply: number;
   decimals: number;
+  mintable: boolean;
+  burnable: boolean;
   network: string;
   logoUrl: string;
   description: string;
@@ -23,6 +25,7 @@ export interface Allocation {
   name: string;
   percentage: number;
   color: string;
+  wallet: string;
 }
 
 interface AppState {
@@ -49,15 +52,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
     symbol: 'MTK',
     supply: 1000000000, // 1 Billion standard
     decimals: 18,
+    mintable: false,
+    burnable: true,
     network: 'Sepolia',
     logoUrl: '',
     description: ''
   });
   const [allocations, setAllocations] = useState<Allocation[]>([
-    { id: '1', name: 'Community', percentage: 40, color: '#3b82f6' }, // blue-500
-    { id: '2', name: 'Team', percentage: 20, color: '#a855f7' },     // purple-500
-    { id: '3', name: 'Treasury', percentage: 20, color: '#eab308' }, // yellow-500
-    { id: '4', name: 'Liquidity', percentage: 20, color: '#22c55e' }  // green-500
+    { id: '1', name: 'Community', percentage: 40, color: '#3b82f6', wallet: '' }, // blue-500
+    { id: '2', name: 'Team', percentage: 20, color: '#a855f7', wallet: '' },     // purple-500
+    { id: '3', name: 'Treasury', percentage: 20, color: '#eab308', wallet: '' }, // yellow-500
+    { id: '4', name: 'Liquidity', percentage: 20, color: '#22c55e', wallet: '' }  // green-500
   ]);
 
   return (
