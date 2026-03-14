@@ -109,7 +109,7 @@ export default function TopBar() {
       console.log('--------------------------------------');
 
       // Trigger the actual deployment
-      deploy(outputData).catch(err => {
+      deploy(outputData).catch((err: any) => {
         console.error("Deployment Error:", err);
       });
     }

@@ -44,7 +44,10 @@ export function useDeployToken() {
         ],
       });
 
-      const receipt = await publicClient.waitForTransactionReceipt({ hash: spawnHash });
+      const receipt = await publicClient.waitForTransactionReceipt({ 
+        hash: spawnHash,
+        timeout: 300_000, // 5 minutes for Sepolia
+      });
       
       // Find the TokenCreated event to get the address
       // The event is: TokenCreated(address indexed tokenAddress, string name, string symbol, address indexed creator)
@@ -84,7 +87,10 @@ export function useDeployToken() {
             target as Address
           ],
         });
-        await publicClient.waitForTransactionReceipt({ hash: tx });
+        await publicClient.waitForTransactionReceipt({ 
+          hash: tx,
+          timeout: 300_000 
+        });
       }
 
       // Sell Tax
@@ -107,7 +113,10 @@ export function useDeployToken() {
             target as Address
           ],
         });
-        await publicClient.waitForTransactionReceipt({ hash: tx });
+        await publicClient.waitForTransactionReceipt({ 
+          hash: tx,
+          timeout: 300_000 
+        });
       }
 
       // Limits
@@ -126,7 +135,10 @@ export function useDeployToken() {
           functionName: 'setLimits',
           args: [maxWallet, maxTx],
         });
-        await publicClient.waitForTransactionReceipt({ hash: tx });
+        await publicClient.waitForTransactionReceipt({ 
+          hash: tx,
+          timeout: 300_000 
+        });
       }
 
       // 3. Enable Trading
@@ -136,7 +148,10 @@ export function useDeployToken() {
         abi: TokenLabABI,
         functionName: 'enableTrading',
       });
-      await publicClient.waitForTransactionReceipt({ hash: enableTx });
+      await publicClient.waitForTransactionReceipt({ 
+        hash: enableTx,
+        timeout: 300_000 
+      });
 
       setStatus({ step: 'success', message: 'Deployment complete!', tokenAddress });
       return tokenAddress;
