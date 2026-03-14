@@ -1,13 +1,16 @@
-import { Activity, Flame, ExternalLink, Printer } from 'lucide-react';
+import { useState } from 'react';
+import { Activity, Flame, ExternalLink, Printer, HelpCircle } from 'lucide-react';
 import '../styles/TokenomicsReport.css';
 import { useAppState } from '../context/AppContext';
 import PieChartWidget from './analytics/PieChartWidget';
 import FlowDiagramWidget from './analytics/FlowDiagramWidget';
 import TokenomicsPieChartWidget from './analytics/TokenomicsPieChartWidget';
 import TokenomicsReport from './analytics/TokenomicsReport';
+import MechanicsInfoModal from './MechanicsInfoModal';
 
 export default function RightPanel() {
   const { config, tokenInfo, allocations, deployedTokenAddress } = useAppState();
+  const [isMechanicsModalOpen, setIsMechanicsModalOpen] = useState(false);
 
   // For MVP, if there are multiple events, we just visualize the 'buy' event tax if it exists, or fallback
   const activeEvent = config?.buy || config?.sell || config?.transfer;
@@ -107,8 +110,15 @@ export default function RightPanel() {
 
       {/* 3. Transaction Mechanics */}
       <div className="bg-gray-50/30 border-b border-gray-100">
-        <div className="p-4 pb-2">
-          <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Transaction Mechanics</h3>
+        <div className="p-4 pb-2 flex items-center justify-between">
+          <h2 className="text-[12px] font-bold text-gray-400 uppercase tracking-wider">Transaction Mechanics</h2>
+          <button
+            onClick={() => setIsMechanicsModalOpen(true)}
+            className="text-gray-400 hover:text-blue-500 transition-colors p-1 hover:bg-white rounded-md hover:cursor-pointer"
+            title="How do mechanics work?"
+          >
+            <HelpCircle size={14} />
+          </button>
         </div>
         <PieChartWidget
           activeEvent={activeEvent}
@@ -161,6 +171,11 @@ export default function RightPanel() {
         allocations={allocations}
         config={config}
         deployedTokenAddress={deployedTokenAddress}
+      />
+
+      <MechanicsInfoModal
+        isOpen={isMechanicsModalOpen}
+        onClose={() => setIsMechanicsModalOpen(false)}
       />
     </div>
   );

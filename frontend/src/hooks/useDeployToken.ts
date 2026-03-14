@@ -81,9 +81,9 @@ export function useDeployToken() {
           functionName: 'configureBuyTax',
           args: [
             data.mechanics.buy.tax * 100, // Basis points
-            liquidity * 100,
-            burn * 100,
-            wallet * 100,
+            data.mechanics.buy.tax > 0 ? (liquidity * 100) / data.mechanics.buy.tax : 100,
+            data.mechanics.buy.tax > 0 ? (burn * 100) / data.mechanics.buy.tax : 0,
+            data.mechanics.buy.tax > 0 ? (wallet * 100) / data.mechanics.buy.tax : 0,
             target as Address
           ],
         });
@@ -107,9 +107,9 @@ export function useDeployToken() {
           functionName: 'configureSellTax',
           args: [
             data.mechanics.sell.tax * 100,
-            liquidity * 100,
-            burn * 100,
-            wallet * 100,
+            data.mechanics.sell.tax > 0 ? (liquidity * 100) / data.mechanics.sell.tax : 100,
+            data.mechanics.sell.tax > 0 ? (burn * 100) / data.mechanics.sell.tax : 0,
+            data.mechanics.sell.tax > 0 ? (wallet * 100) / data.mechanics.sell.tax : 0,
             target as Address
           ],
         });

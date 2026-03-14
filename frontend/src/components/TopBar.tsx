@@ -3,6 +3,7 @@ import { Rocket, AlertTriangle, X, CheckCircle2, Loader2 } from 'lucide-react';
 import { useAppState } from '../context/AppContext';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount } from 'wagmi';
+import { isAddress } from 'viem';
 import { useDeployToken } from '../hooks/useDeployToken';
 
 export default function TopBar() {
@@ -24,6 +25,9 @@ export default function TopBar() {
     const missingWallets = allocations.filter((a: any) => !a.wallet || a.wallet.trim() === '');
     if (missingWallets.length > 0) errs.push(`Missing ${missingWallets.length} distribution wallet(s)`);
 
+    const invalidWallets = allocations.filter((a: any) => a.wallet && !isAddress(a.wallet));
+    if (invalidWallets.length > 0) errs.push(`${invalidWallets.length} distribution wallet(s) have invalid address format`);
+
     const totalAlloc = allocations.reduce((sum: number, a: any) => sum + Number(a.percentage || 0), 0);
     if (totalAlloc !== 100) errs.push("Distribution allocation must equal 100%");
 
@@ -38,6 +42,19 @@ export default function TopBar() {
 
       // Map mechanics from Blockly config
       const mechanics: any = {};
+      
+      // Helper to find a suitable project wallet from allocations
+      const findProjectWallet = () => {
+        const team = allocations.find((a: any) => 
+          a.name.toLowerCase().includes('team') || 
+          a.name.toLowerCase().includes('marketing') || 
+          a.name.toLowerCase().includes('treasury')
+        );
+        return team?.wallet || allocations[0]?.wallet || '0x0000000000000000000000000000000000000000';
+      };
+
+      const projectWallet = findProjectWallet();
+
       if (config) {
         if (config.buy) {
           mechanics.buy = {
@@ -46,7 +63,7 @@ export default function TopBar() {
           };
           if (config.buy.split) {
             if (config.buy.split.liquidity) mechanics.buy.distribution.push({ type: 'liquidity', percent: config.buy.split.liquidity });
-            if (config.buy.split.wallet) mechanics.buy.distribution.push({ type: 'wallet', target: 'Project Wallet', percent: config.buy.split.wallet }); // Target can be dynamic later
+            if (config.buy.split.wallet) mechanics.buy.distribution.push({ type: 'wallet', target: projectWallet, percent: config.buy.split.wallet });
             if (config.buy.split.burn) mechanics.buy.distribution.push({ type: 'burn', percent: config.buy.split.burn });
           }
         }
@@ -57,7 +74,7 @@ export default function TopBar() {
           };
           if (config.sell.split) {
             if (config.sell.split.liquidity) mechanics.sell.distribution.push({ type: 'liquidity', percent: config.sell.split.liquidity });
-            if (config.sell.split.wallet) mechanics.sell.distribution.push({ type: 'wallet', target: 'Project Wallet', percent: config.sell.split.wallet });
+            if (config.sell.split.wallet) mechanics.sell.distribution.push({ type: 'wallet', target: projectWallet, percent: config.sell.split.wallet });
             if (config.sell.split.burn) mechanics.sell.distribution.push({ type: 'burn', percent: config.sell.split.burn });
           }
         }
@@ -68,7 +85,7 @@ export default function TopBar() {
           };
           if (config.transfer.split) {
             if (config.transfer.split.liquidity) mechanics.transfer.distribution.push({ type: 'liquidity', percent: config.transfer.split.liquidity });
-            if (config.transfer.split.wallet) mechanics.transfer.distribution.push({ type: 'wallet', target: 'Project Wallet', percent: config.transfer.split.wallet });
+            if (config.transfer.split.wallet) mechanics.transfer.distribution.push({ type: 'wallet', target: projectWallet, percent: config.transfer.split.wallet });
             if (config.transfer.split.burn) mechanics.transfer.distribution.push({ type: 'burn', percent: config.transfer.split.burn });
           }
         }
