@@ -30,15 +30,6 @@ export function defineTokenBlocks() {
     },
   };
 
-  Blockly.Blocks['when_transfer'] = {
-    init: function () {
-      this.appendDummyInput().appendField('⚡ WHEN TRANSFER');
-      this.appendStatementInput('TAX_CONTAINER').setCheck('TAX_CONTAINER');
-      this.setColour(COLORS.EVENT);
-      this.setTooltip('Triggered on standard wallet-to-wallet transfers.');
-    },
-  };
-
   // 2. TAX CONTAINER
   Blockly.Blocks['tax_container'] = {
     init: function () {
@@ -142,7 +133,6 @@ export const INITIAL_TOOLBOX = {
       contents: [
         { kind: 'block', type: 'when_buy' },
         { kind: 'block', type: 'when_sell' },
-        { kind: 'block', type: 'when_transfer' },
       ],
     },
     {

@@ -30,12 +30,6 @@ TokenJSONGenerator.forBlock['when_sell'] = function(block: Blockly.Block) {
   return `"sell": {\n${taxNodes}\n  }`;
 };
 
-TokenJSONGenerator.forBlock['when_transfer'] = function(block: Blockly.Block) {
-  const taxNodes = TokenJSONGenerator.statementToCode(block, 'TAX_CONTAINER') as string;
-  if (!taxNodes) return '';
-  return `"transfer": {\n${taxNodes}\n  }`;
-};
-
 // 2. Tax
 TokenJSONGenerator.forBlock['tax_container'] = function(block: Blockly.Block) {
   const taxRate = block.getFieldValue('TAX_RATE');

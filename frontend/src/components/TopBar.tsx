@@ -42,12 +42,12 @@ export default function TopBar() {
 
       // Map mechanics from Blockly config
       const mechanics: any = {};
-      
+
       // Helper to find a suitable project wallet from allocations
       const findProjectWallet = () => {
-        const team = allocations.find((a: any) => 
-          a.name.toLowerCase().includes('team') || 
-          a.name.toLowerCase().includes('marketing') || 
+        const team = allocations.find((a: any) =>
+          a.name.toLowerCase().includes('team') ||
+          a.name.toLowerCase().includes('marketing') ||
           a.name.toLowerCase().includes('treasury')
         );
         return team?.wallet || allocations[0]?.wallet || '0x0000000000000000000000000000000000000000';
@@ -121,10 +121,6 @@ export default function TopBar() {
         }
       };
 
-      console.log('--- DEBUG: BUNDLED DEPLOYMENT DATA ---');
-      console.log(JSON.stringify(outputData, null, 2));
-      console.log('--------------------------------------');
-
       // Trigger the actual deployment
       deploy(outputData).then(addr => {
         if (addr) setDeployedTokenAddress(addr);
@@ -136,9 +132,14 @@ export default function TopBar() {
 
   return (
     <div className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 shrink-0 z-50 shadow-sm relative">
-      <div className="flex items-center gap-2">
-        <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold">T</div>
-        <h1 className="text-xl font-bold text-gray-800">TokenLab</h1>
+      <div className="flex items-center gap-3 group">
+        <div className="relative">
+          <img src="/favicon.svg" alt="TokenLab Logo" className="w-9 h-9 group-hover:scale-105 transition-transform duration-300" />
+        </div>
+        <div className="flex flex-col -gap-1">
+          <h1 className="text-xl font-black text-gray-900 tracking-tight leading-none">Token<span className="text-blue-600">Lab</span></h1>
+          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none mt-1">Deploy Advanced Tokens Effortlessly</span>
+        </div>
       </div>
 
       <div className="flex-1"></div>
