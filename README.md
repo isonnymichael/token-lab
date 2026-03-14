@@ -40,9 +40,13 @@ Protect your community from market manipulation with customizable:
 
 ## 📸 Screenshots
 
-| Workspace Overview | Tax Configuration |
-| :--- | :--- |
-| ![Workspace](https://placehold.co/600x400/EEF2F5/4b5563?text=Blockly+Workspace) | ![Tax Preview](https://placehold.co/600x400/ffffff/4b5563?text=Live+Analytics+Preview) |
+| Workspace | Mechanics |
+| :---: | :---: |
+| ![Workspace](.antigravity/images/workspace.png) | ![Mechanics](.antigravity/images/mechanics.png) |
+
+| Tokenomics | Live Preview |
+| :---: | :---: |
+| ![Tokenomics](.antigravity/images/tokenomics.png) | ![Live Preview](.antigravity/images/live_preview.png) |
 
 ---
 
