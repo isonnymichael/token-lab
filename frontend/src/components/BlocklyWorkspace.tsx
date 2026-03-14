@@ -99,7 +99,7 @@ export default function BlocklyWorkspace() {
 
       const workspace = workspaceRef.current;
       if (!workspace) return;
-      
+
       runValidationAndGeneration(workspace);
     });
 
@@ -113,17 +113,17 @@ export default function BlocklyWorkspace() {
     try {
       const parser = new DOMParser();
       const xmlDoc = parser.parseFromString(xmlString, "text/xml");
-      
+
       Blockly.Events.disable();
       workspaceRef.current.clear();
       Blockly.Xml.domToWorkspace(xmlDoc.documentElement, workspaceRef.current);
       Blockly.Events.enable();
-      
+
       setIsModalOpen(false);
-      
+
       // Force an update to the UI Since we disabled events during load
       runValidationAndGeneration(workspaceRef.current);
-      
+
     } catch (e) {
       console.error("Failed to load template", e);
     }
@@ -131,17 +131,17 @@ export default function BlocklyWorkspace() {
 
   return (
     <div className="flex-1 relative flex flex-col min-w-0">
-      
-      <TemplateModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-        onSelect={handleLoadTemplate} 
+
+      <TemplateModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSelect={handleLoadTemplate}
       />
 
       {/* Breadcrumbs / Info */}
       <div className="absolute top-4 right-4 z-10 flex gap-2">
-        <button 
-          onClick={() => setIsModalOpen(true)} 
+        <button
+          onClick={() => setIsModalOpen(true)}
           className="bg-white/80 hover:bg-white backdrop-blur rounded-md px-3 py-1.5 text-xs font-semibold text-blue-600 shadow-sm border border-gray-200 transition-colors cursor-pointer active:scale-95"
         >
           Templates
@@ -156,3 +156,4 @@ export default function BlocklyWorkspace() {
     </div>
   );
 }
+

@@ -2,9 +2,10 @@ import { Activity, Flame } from 'lucide-react';
 import { useAppState } from '../context/AppContext';
 import PieChartWidget from './analytics/PieChartWidget';
 import FlowDiagramWidget from './analytics/FlowDiagramWidget';
+import TokenomicsPieChartWidget from './analytics/TokenomicsPieChartWidget';
 
 export default function RightPanel() {
-  const { config, tokenInfo } = useAppState();
+  const { config, tokenInfo, allocations } = useAppState();
 
   // For MVP, if there are multiple events, we just visualize the 'buy' event tax if it exists, or fallback
   const activeEvent = config?.buy || config?.sell || config?.transfer;
@@ -41,15 +42,32 @@ export default function RightPanel() {
   return (
     <div className="w-[350px] bg-white border-l border-gray-200 flex flex-col shrink-0 overflow-y-auto">
       <div className="p-4 border-b border-gray-100 flex items-center justify-between">
-        <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider">Tokenomics</h2>
+        <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider">Live Preview</h2>
         <span className="flex h-2 w-2 relative">
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
           <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
         </span>
       </div>
 
-      {/* Analytics Highlights */}
-      <PieChartWidget 
+      {/* 1. Token Supply Details */}
+      <div className="p-5 border-b border-gray-100 bg-gray-50">
+        <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Token Supply</h3>
+        <div className="flex justify-between items-center mb-1">
+          <span className="font-bold text-gray-800 text-lg leading-none">{tokenInfo.name} ({tokenInfo.symbol})</span>
+          <span className="text-xs font-bold text-blue-600 bg-blue-100 px-2 py-0.5 rounded">{tokenInfo.network}</span>
+        </div>
+        <p className="text-xs font-semibold text-gray-500">{tokenInfo.supply.toLocaleString()} Total Max Supply</p>
+      </div>
+
+      {/* 2. Tokenomics Allocation (100%) */}
+      <TokenomicsPieChartWidget allocations={allocations} totalSupply={tokenInfo.supply} />
+
+      {/* 3. Transaction Mechanics */}
+      <div className="bg-gray-50/30 border-b border-gray-100">
+        <div className="p-4 pb-2">
+           <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Transaction Mechanics</h3>
+        </div>
+        <PieChartWidget
         activeEvent={activeEvent}
         taxRate={taxRate}
         displayData={displayData}
@@ -57,7 +75,7 @@ export default function RightPanel() {
       />
 
       {/* Transaction Flow Diagram (Static CSS/SVG Mock) */}
-      <FlowDiagramWidget 
+      <FlowDiagramWidget
         activeEvent={activeEvent}
         taxRate={taxRate}
         tokenSymbol={tokenInfo.symbol}
@@ -65,6 +83,7 @@ export default function RightPanel() {
         mktValue={mktValue}
         burnValue={burnValue}
       />
+      </div>
 
       {/* Token Stats Table */}
       <div className="p-5">

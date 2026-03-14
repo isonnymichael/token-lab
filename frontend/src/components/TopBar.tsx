@@ -2,11 +2,9 @@ import { Rocket, AlertTriangle } from 'lucide-react';
 import { useAppState } from '../context/AppContext';
 
 export default function TopBar() {
-  const { isValid, errors, tokenInfo, setTokenInfo } = useAppState();
+  const { isValid, errors } = useAppState();
 
-  const handleUpdate = (field: keyof typeof tokenInfo, value: string | number) => {
-    setTokenInfo({ ...tokenInfo, [field]: value });
-  };
+  // Inputs moved to LeftPanel
 
   return (
     <div className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 shrink-0 z-10 shadow-sm">
@@ -15,17 +13,7 @@ export default function TopBar() {
         <h1 className="text-xl font-bold text-gray-800">TokenLab</h1>
       </div>
       
-      <div className="flex items-center gap-4 bg-gray-50 p-1.5 rounded-lg border border-gray-200">
-        <input type="text" placeholder="Token Name" className="px-3 py-1.5 bg-white border border-gray-200 rounded text-sm w-32 focus:outline-none focus:ring-1 focus:ring-blue-500" value={tokenInfo.name} onChange={e => handleUpdate('name', e.target.value)} />
-        <input type="text" placeholder="SYMBOL" className="px-3 py-1.5 bg-white border border-gray-200 rounded text-sm w-24 focus:outline-none focus:ring-1 focus:ring-blue-500" value={tokenInfo.symbol} onChange={e => handleUpdate('symbol', e.target.value.toUpperCase())} />
-        <input type="number" placeholder="Total Supply" className="px-3 py-1.5 bg-white border border-gray-200 rounded text-sm w-36 focus:outline-none focus:ring-1 focus:ring-blue-500" value={tokenInfo.supply} onChange={e => handleUpdate('supply', Number(e.target.value))} />
-        <select className="px-3 py-1.5 bg-white border border-gray-200 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500" value={tokenInfo.network} onChange={e => handleUpdate('network', e.target.value)}>
-          <option>Ethereum</option>
-          <option>Base</option>
-          <option>Arbitrum</option>
-          <option>BSC</option>
-        </select>
-      </div>
+      <div className="flex-1"></div>
 
       <div className="flex items-center gap-3">
         {!isValid && errors.length > 0 && (

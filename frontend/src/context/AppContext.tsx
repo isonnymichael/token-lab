@@ -15,15 +15,25 @@ export interface TokenInfo {
   network: string;
 }
 
+export interface Allocation {
+  id: string;
+  name: string;
+  percentage: number;
+  color: string;
+}
+
 interface AppState {
   isValid: boolean;
   errors: string[];
   config: TokenConfig | null;
   tokenInfo: TokenInfo;
+  allocations: Allocation[];
   setValidation: (isValid: boolean, errors: string[]) => void;
   setConfig: (config: TokenConfig) => void;
   setTokenInfo: (info: TokenInfo) => void;
+  setAllocations: (allocs: Allocation[]) => void;
 }
+
 
 const AppContext = createContext<AppState | undefined>(undefined);
 
@@ -34,20 +44,28 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [tokenInfo, setTokenInfo] = useState<TokenInfo>({
     name: 'MyToken',
     symbol: 'MTK',
-    supply: 1000000,
+    supply: 1000000000, // 1 Billion standard
     network: 'Ethereum'
   });
+  const [allocations, setAllocations] = useState<Allocation[]>([
+    { id: '1', name: 'Community', percentage: 40, color: '#3b82f6' }, // blue-500
+    { id: '2', name: 'Team', percentage: 20, color: '#a855f7' },     // purple-500
+    { id: '3', name: 'Treasury', percentage: 20, color: '#eab308' }, // yellow-500
+    { id: '4', name: 'Liquidity', percentage: 20, color: '#22c55e' }  // green-500
+  ]);
 
   return (
-    <AppContext.Provider 
-      value={{ 
-        isValid, 
-        errors, 
-        config, 
+    <AppContext.Provider
+      value={{
+        isValid,
+        errors,
+        config,
         tokenInfo,
-        setValidation: (v, e) => { setIsValid(v); setErrors(e); }, 
+        allocations,
+        setValidation: (v, e) => { setIsValid(v); setErrors(e); },
         setConfig,
-        setTokenInfo
+        setTokenInfo,
+        setAllocations
       }}
     >
       {children}
