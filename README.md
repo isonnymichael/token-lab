@@ -1,8 +1,19 @@
-# TokenLab | Visual Tokenomics Builder 🚀
+<p align="center">
+  <img src="https://raw.githubusercontent.com/isonnymichael/token-lab/main/frontend/src/assets/logo.png" alt="TokenLab Logo" width="120px" height="120px">
+</p>
 
-![TokenLab Banner](https://placehold.co/1200x400/3b82f6/white?text=TokenLab+-+Visual+Tokenomics+Builder)
+<h1 align="center">TokenLab | Visual Tokenomics Builder 🚀</h1>
 
-**TokenLab** is a premium, no-code platform that allows developers and innovators to design, simulate, and deploy advanced ERC-20 tokens through an intuitive visual interface. TokenLab brings "drag-and-drop" simplicity to complex smart contract engineering.
+<p align="center">
+  <img src="https://img.shields.io/github/license/isonnymichael/token-lab?style=flat-square&color=3b82f6" alt="License">
+  <img src="https://img.shields.io/github/stars/isonnymichael/token-lab?style=flat-square&color=3b82f6" alt="Stars">
+  <img src="https://img.shields.io/github/forks/isonnymichael/token-lab?style=flat-square&color=3b82f6" alt="Forks">
+  <img src="https://img.shields.io/github/issues/isonnymichael/token-lab?style=flat-square&color=ef4444" alt="Issues">
+</p>
+
+<p align="center">
+  <strong>Build advanced tokenomics visually, no coding required.</strong>
+</p>
 
 ---
 
