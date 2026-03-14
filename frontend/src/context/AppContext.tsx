@@ -49,7 +49,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     symbol: 'MTK',
     supply: 1000000000, // 1 Billion standard
     decimals: 18,
-    network: 'Ethereum',
+    network: 'Sepolia',
     logoUrl: '',
     description: ''
   });

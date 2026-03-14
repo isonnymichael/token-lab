@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronRight, Plus, X, PieChart, Coins, CalendarClock, Image as ImageIcon } from 'lucide-react';
 import { useAppState, type Allocation } from '../context/AppContext';
+import { useSwitchChain } from 'wagmi';
 
 
 
 export default function LeftPanel() {
   const { tokenInfo, setTokenInfo, allocations, setAllocations } = useAppState();
+  const { switchChain } = useSwitchChain();
 
   // Accordion state
   const [openSections, setOpenSections] = useState({
@@ -21,6 +23,26 @@ export default function LeftPanel() {
 
   const handleSupplyUpdate = (field: keyof typeof tokenInfo, value: string | number) => {
     setTokenInfo({ ...tokenInfo, [field]: value });
+  };
+
+  const handleNetworkChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const network = e.target.value;
+    handleSupplyUpdate('network', network);
+    
+    if (switchChain) {
+      const chainMap: Record<string, number> = {
+        'Sepolia': 11155111,
+        'Ethereum': 1,
+        'Base': 8453,
+        'Arbitrum': 42161,
+        'Polygon': 137,
+        'Optimism': 10
+      };
+      const chainId = chainMap[network];
+      if (chainId) {
+        switchChain({ chainId }, { onError: () => {} });
+      }
+    }
   };
 
   const handleAllocationChange = (id: string, field: keyof Allocation, value: string | number) => {
@@ -77,11 +99,13 @@ export default function LeftPanel() {
             </div>
             <div>
               <label className="block text-xs font-semibold text-gray-500 mb-1">Network</label>
-              <select className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-gray-700" value={tokenInfo.network} onChange={e => handleSupplyUpdate('network', e.target.value)}>
+              <select className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-gray-700" value={tokenInfo.network} onChange={handleNetworkChange}>
+                <option>Sepolia</option>
                 <option>Ethereum</option>
                 <option>Base</option>
                 <option>Arbitrum</option>
-                <option>BSC</option>
+                <option>Polygon</option>
+                <option>Optimism</option>
               </select>
             </div>
           </div>
