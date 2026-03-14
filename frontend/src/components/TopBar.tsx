@@ -6,7 +6,7 @@ import { useAccount } from 'wagmi';
 import { useDeployToken } from '../hooks/useDeployToken';
 
 export default function TopBar() {
-  const { isValid, errors, allocations, tokenInfo, config } = useAppState();
+  const { isValid, errors, allocations, tokenInfo, config, setDeployedTokenAddress } = useAppState();
   const { isConnected } = useAccount();
   const { deploy, status, reset } = useDeployToken();
 
@@ -109,7 +109,9 @@ export default function TopBar() {
       console.log('--------------------------------------');
 
       // Trigger the actual deployment
-      deploy(outputData).catch((err: any) => {
+      deploy(outputData).then(addr => {
+        if (addr) setDeployedTokenAddress(addr);
+      }).catch((err: any) => {
         console.error("Deployment Error:", err);
       });
     }
@@ -203,7 +205,7 @@ export default function TopBar() {
             {(status.step === 'success' || status.step === 'error') && (
               <button
                 onClick={reset}
-                className="w-full py-3 bg-gray-900 hover:bg-black text-white rounded-xl font-semibold transition-all shadow-lg hover:shadow-xl active:scale-95"
+                className="w-full hover:cursor-pointer py-3 bg-gray-900 hover:bg-black text-white rounded-xl font-semibold transition-all shadow-lg hover:shadow-xl active:scale-95"
               >
                 Close
               </button>

@@ -1,11 +1,13 @@
-import { Activity, Flame } from 'lucide-react';
+import { Activity, Flame, ExternalLink, Printer } from 'lucide-react';
+import '../styles/TokenomicsReport.css';
 import { useAppState } from '../context/AppContext';
 import PieChartWidget from './analytics/PieChartWidget';
 import FlowDiagramWidget from './analytics/FlowDiagramWidget';
 import TokenomicsPieChartWidget from './analytics/TokenomicsPieChartWidget';
+import TokenomicsReport from './analytics/TokenomicsReport';
 
 export default function RightPanel() {
-  const { config, tokenInfo, allocations } = useAppState();
+  const { config, tokenInfo, allocations, deployedTokenAddress } = useAppState();
 
   // For MVP, if there are multiple events, we just visualize the 'buy' event tax if it exists, or fallback
   const activeEvent = config?.buy || config?.sell || config?.transfer;
@@ -39,14 +41,26 @@ export default function RightPanel() {
   const maxTx = config?.maxTx || 'Unset';
   const burnProjected = burnValue * 10000; // simplistic: per 1M vol.
 
+  const handlePrint = () => {
+    window.print();
+  };
+
   return (
     <div className="w-[350px] bg-white border-l border-gray-200 flex flex-col shrink-0 overflow-y-auto">
-      <div className="p-4 border-b border-gray-100 flex items-center justify-between">
+      <div className="p-4 border-b border-gray-100 flex items-center justify-between no-print">
         <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider">Live Preview</h2>
-        <span className="flex h-2 w-2 relative">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-        </span>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handlePrint}
+            className="p-1.5 hover:cursor-pointer hover:bg-gray-100 rounded-md text-gray-400 hover:text-blue-600 transition-colors title='Print Report'"
+          >
+            <Printer size={16} />
+          </button>
+          <span className="flex h-2 w-2 relative">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+          </span>
+        </div>
       </div>
 
       {/* 1. Token Supply / Metadata Details */}
@@ -68,11 +82,23 @@ export default function RightPanel() {
             <p className="text-xs font-semibold text-gray-500">{tokenInfo.supply.toLocaleString()} Total Max Supply</p>
           </div>
         </div>
-        
+
         {tokenInfo.description && (
           <p className="text-xs text-gray-600 mt-2 line-clamp-2 leading-relaxed italic">
             "{tokenInfo.description}"
           </p>
+        )}
+
+        {deployedTokenAddress && (
+          <a
+            href={`https://sepolia.etherscan.io/address/${deployedTokenAddress}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 flex items-center justify-center gap-2 w-full py-2 bg-blue-50 text-blue-600 rounded-lg text-[10px] font-bold uppercase tracking-wider hover:bg-blue-100 transition-colors border border-blue-100 shadow-sm"
+          >
+            <ExternalLink size={12} />
+            View on Etherscan
+          </a>
         )}
       </div>
 
@@ -82,24 +108,24 @@ export default function RightPanel() {
       {/* 3. Transaction Mechanics */}
       <div className="bg-gray-50/30 border-b border-gray-100">
         <div className="p-4 pb-2">
-           <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Transaction Mechanics</h3>
+          <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Transaction Mechanics</h3>
         </div>
         <PieChartWidget
-        activeEvent={activeEvent}
-        taxRate={taxRate}
-        displayData={displayData}
-        chartData={chartData}
-      />
+          activeEvent={activeEvent}
+          taxRate={taxRate}
+          displayData={displayData}
+          chartData={chartData}
+        />
 
-      {/* Transaction Flow Diagram (Static CSS/SVG Mock) */}
-      <FlowDiagramWidget
-        activeEvent={activeEvent}
-        taxRate={taxRate}
-        tokenSymbol={tokenInfo.symbol}
-        liqValue={liqValue}
-        mktValue={mktValue}
-        burnValue={burnValue}
-      />
+        {/* Transaction Flow Diagram (Static CSS/SVG Mock) */}
+        <FlowDiagramWidget
+          activeEvent={activeEvent}
+          taxRate={taxRate}
+          tokenSymbol={tokenInfo.symbol}
+          liqValue={liqValue}
+          mktValue={mktValue}
+          burnValue={burnValue}
+        />
       </div>
 
       {/* Token Stats Table */}
@@ -129,6 +155,13 @@ export default function RightPanel() {
         </div>
       </div>
 
+      {/* Modular Report Component (Hidden on web, visible on print) */}
+      <TokenomicsReport
+        tokenInfo={tokenInfo}
+        allocations={allocations}
+        config={config}
+        deployedTokenAddress={deployedTokenAddress}
+      />
     </div>
   );
 }

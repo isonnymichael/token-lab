@@ -34,10 +34,12 @@ interface AppState {
   config: TokenConfig | null;
   tokenInfo: TokenInfo;
   allocations: Allocation[];
+  deployedTokenAddress: string | null;
   setValidation: (isValid: boolean, errors: string[]) => void;
   setConfig: (config: TokenConfig) => void;
   setTokenInfo: (info: TokenInfo) => void;
   setAllocations: (allocs: Allocation[]) => void;
+  setDeployedTokenAddress: (address: string | null) => void;
 }
 
 
@@ -64,6 +66,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     { id: '3', name: 'Treasury', percentage: 20, color: '#eab308', wallet: '' }, // yellow-500
     { id: '4', name: 'Liquidity', percentage: 20, color: '#22c55e', wallet: '' }  // green-500
   ]);
+  const [deployedTokenAddress, setDeployedTokenAddress] = useState<string | null>(null);
 
   return (
     <AppContext.Provider
@@ -73,10 +76,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
         config,
         tokenInfo,
         allocations,
+        deployedTokenAddress,
         setValidation: (v, e) => { setIsValid(v); setErrors(e); },
         setConfig,
         setTokenInfo,
-        setAllocations
+        setAllocations,
+        setDeployedTokenAddress
       }}
     >
       {children}
