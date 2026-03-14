@@ -5,7 +5,7 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount } from 'wagmi';
 
 export default function TopBar() {
-  const { isValid, errors, allocations, tokenInfo } = useAppState();
+  const { isValid, errors, allocations, tokenInfo, config } = useAppState();
   const { isConnected } = useAccount();
 
   const [showErrors, setShowErrors] = useState(false);
@@ -33,7 +33,80 @@ export default function TopBar() {
     } else {
       setValidationErrors([]);
       setShowErrors(false);
-      alert("Validation Passed! Ready to Deploy Smart Contract.");
+
+      // Map mechanics from Blockly config
+      const mechanics: any = {};
+      if (config) {
+        if (config.buy) {
+          mechanics.buy = {
+            tax: config.buy.tax,
+            distribution: []
+          };
+          if (config.buy.split) {
+            if (config.buy.split.liquidity) mechanics.buy.distribution.push({ type: 'liquidity', percent: config.buy.split.liquidity });
+            if (config.buy.split.wallet) mechanics.buy.distribution.push({ type: 'wallet', target: 'Project Wallet', percent: config.buy.split.wallet }); // Target can be dynamic later
+            if (config.buy.split.burn) mechanics.buy.distribution.push({ type: 'burn', percent: config.buy.split.burn });
+          }
+        }
+        if (config.sell) {
+          mechanics.sell = {
+            tax: config.sell.tax,
+            distribution: []
+          };
+          if (config.sell.split) {
+            if (config.sell.split.liquidity) mechanics.sell.distribution.push({ type: 'liquidity', percent: config.sell.split.liquidity });
+            if (config.sell.split.wallet) mechanics.sell.distribution.push({ type: 'wallet', target: 'Project Wallet', percent: config.sell.split.wallet });
+            if (config.sell.split.burn) mechanics.sell.distribution.push({ type: 'burn', percent: config.sell.split.burn });
+          }
+        }
+        if (config.transfer) {
+          mechanics.transfer = {
+            tax: config.transfer.tax,
+            distribution: []
+          };
+          if (config.transfer.split) {
+            if (config.transfer.split.liquidity) mechanics.transfer.distribution.push({ type: 'liquidity', percent: config.transfer.split.liquidity });
+            if (config.transfer.split.wallet) mechanics.transfer.distribution.push({ type: 'wallet', target: 'Project Wallet', percent: config.transfer.split.wallet });
+            if (config.transfer.split.burn) mechanics.transfer.distribution.push({ type: 'burn', percent: config.transfer.split.burn });
+          }
+        }
+      }
+
+      // Bundle data based on output-example.json
+      const outputData = {
+        metadata: {
+          name: tokenInfo.name,
+          symbol: tokenInfo.symbol,
+          logoURI: tokenInfo.logoUrl,
+          description: tokenInfo.description
+        },
+        supply: {
+          totalSupply: tokenInfo.supply.toString(),
+          decimals: tokenInfo.decimals,
+          mintable: tokenInfo.mintable,
+          burnable: tokenInfo.burnable
+        },
+        distribution: allocations.map(a => ({
+          name: a.name,
+          percent: a.percentage,
+          wallet: a.wallet
+        })),
+        mechanics: mechanics,
+        limits: {
+          maxWalletPercent: config?.maxWallet,
+          maxTxPercent: config?.maxTx
+        },
+        deployment: {
+          network: tokenInfo.network,
+          owner: allocations.find(a => a.name.toLowerCase().includes('team'))?.wallet || allocations[0]?.wallet
+        }
+      };
+
+      console.log('--- DEBUG: BUNDLED DEPLOYMENT DATA ---');
+      console.log(JSON.stringify(outputData, null, 2));
+      console.log('--------------------------------------');
+
+      alert("Validation Passed! Bundle data logged to console. Ready to Deploy.");
     }
   };
 

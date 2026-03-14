@@ -32,7 +32,7 @@
             "wallet": "0xabc..."
         }
     ],
-    "mechanics": {
+    "mechanics": { // maybe can be empty not required
         "buy": {
             "tax": 10,
             "distribution": [
@@ -52,7 +52,7 @@
             ]
         }
     },
-    "limits": {
+    "limits": { // maybe can be empty (not required)
         "maxWalletPercent": 2,
         "maxTxPercent": 1
     },
