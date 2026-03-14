@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/isonnymichael/token-lab/main/frontend/src/assets/logo.png" alt="TokenLab Logo" width="120px" height="120px">
+  <img src="https://raw.githubusercontent.com/isonnymichael/token-lab/master/frontend/public/logo.png" alt="TokenLab Logo" width="120px" height="120px">
 </p>
 
 <h1 align="center">TokenLab | Visual Tokenomics Builder 🚀</h1>
