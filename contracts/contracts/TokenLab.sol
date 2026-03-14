@@ -11,6 +11,14 @@ import "@openzeppelin/contracts/access/Ownable.sol";
  * Built for the TokenLab platform. Follows OpenZeppelin v5.x standards.
  */
 contract TokenLab is ERC20, ERC20Burnable, Ownable {
+    /**
+     * @dev Struct to hold tax settings for different events (buy/sell).
+     * @param totalTax Total tax in basis points (e.g., 500 = 5%).
+     * @param liquidityPercent % of the collected tax sent to liquidity.
+     * @param burnPercent % of the collected tax to be burned.
+     * @param walletPercent % of the collected tax sent to a specific project wallet.
+     * @param walletTarget The address receiving the walletPercent share.
+     */
     struct TaxConfig {
         uint16 totalTax; // in basis points (100 = 1%)
         uint16 liquidityPercent; // percentage of totalTax
@@ -19,16 +27,20 @@ contract TokenLab is ERC20, ERC20Burnable, Ownable {
         address walletTarget;
     }
 
+    // Tax configurations for Buy and Sell events (usually triggered via Dex pairs)
     TaxConfig public buyTax;
     TaxConfig public sellTax;
 
+    // Anti-whale limits (e.g., max 2% of total supply per wallet)
     uint256 public maxWalletAmount;
     uint256 public maxTxAmount;
 
+    // State mappings to manage fee/limit exemptions and identify DEX pairs
     mapping(address => bool) public isExcludedFromFees;
     mapping(address => bool) public isExcludedFromLimits;
     mapping(address => bool) public isAutomatedMarketMakerPair;
 
+    // Trading is disabled by default to allow owner to set up initial liquidity/taxes
     bool public tradingEnabled = false;
 
     event TradingEnabled();
@@ -38,6 +50,15 @@ contract TokenLab is ERC20, ERC20Burnable, Ownable {
     event UpdateTax(string taxType, uint256 totalTax);
     event UpdateLimits(uint256 maxWalletAmount, uint256 maxTxAmount);
 
+    /**
+     * @dev Constructor is called once during token deployment.
+     * @param name Name of the token (e.g., "MyToken").
+     * @param symbol Symbol of the token (e.g., "MTK").
+     * @param totalSupply_ Total amount of tokens to create (in absolute units including decimals).
+     * @param initialOwner Address that will have permission to configure taxes/limits.
+     * @param distributionWallets List of addresses to receive the initial supply.
+     * @param distributionPercents Corresponding percentages for each wallet (must sum to 100).
+     */
     constructor(
         string memory name,
         string memory symbol,
@@ -104,6 +125,14 @@ contract TokenLab is ERC20, ERC20Burnable, Ownable {
         emit ExcludeFromLimits(account, excluded);
     }
 
+    /**
+     * @dev Sets the Buy Tax configuration. Usually called right after deployment.
+     * @param totalTax Total tax in basis points (max 2500 i.e. 25%).
+     * @param liquidityPercent Share of tax for LP.
+     * @param burnPercent Share of tax to burn.
+     * @param walletPercent Share of tax for project wallet.
+     * @param walletTarget Destination address for project wallet share.
+     */
     function configureBuyTax(
         uint16 totalTax,
         uint16 liquidityPercent,

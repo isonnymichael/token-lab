@@ -22,7 +22,11 @@
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+    "baseUrl": ".",
+    "paths": {
+      "@contracts/*": ["../contracts/*"]
+    }
   },
-  "include": ["src"]
+  "include": ["src", "../contracts/artifacts/contracts/**/*.json", "../contracts/ignition/deployments/**/*.json"]
 }

@@ -1,12 +1,14 @@
 import { useState } from 'react';
-import { Rocket, AlertTriangle, X } from 'lucide-react';
+import { Rocket, AlertTriangle, X, CheckCircle2, Loader2 } from 'lucide-react';
 import { useAppState } from '../context/AppContext';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount } from 'wagmi';
+import { useDeployToken } from '../hooks/useDeployToken';
 
 export default function TopBar() {
   const { isValid, errors, allocations, tokenInfo, config } = useAppState();
   const { isConnected } = useAccount();
+  const { deploy, status, reset } = useDeployToken();
 
   const [showErrors, setShowErrors] = useState(false);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
@@ -19,10 +21,10 @@ export default function TopBar() {
     if (!tokenInfo.supply || tokenInfo.supply <= 0) errs.push("Total Supply must be > 0");
     if (tokenInfo.decimals === undefined || tokenInfo.decimals === null || tokenInfo.decimals < 0 || tokenInfo.decimals > 18) errs.push("Decimals must be between 0 and 18");
 
-    const missingWallets = allocations.filter(a => !a.wallet || a.wallet.trim() === '');
+    const missingWallets = allocations.filter((a: any) => !a.wallet || a.wallet.trim() === '');
     if (missingWallets.length > 0) errs.push(`Missing ${missingWallets.length} distribution wallet(s)`);
 
-    const totalAlloc = allocations.reduce((sum, a) => sum + Number(a.percentage || 0), 0);
+    const totalAlloc = allocations.reduce((sum: number, a: any) => sum + Number(a.percentage || 0), 0);
     if (totalAlloc !== 100) errs.push("Distribution allocation must equal 100%");
 
     if (!isValid && errors.length > 0) errs.push(`Blockly: ${errors[0]}`);
@@ -86,7 +88,7 @@ export default function TopBar() {
           mintable: tokenInfo.mintable,
           burnable: tokenInfo.burnable
         },
-        distribution: allocations.map(a => ({
+        distribution: allocations.map((a: any) => ({
           name: a.name,
           percent: a.percentage,
           wallet: a.wallet
@@ -98,7 +100,7 @@ export default function TopBar() {
         },
         deployment: {
           network: tokenInfo.network,
-          owner: allocations.find(a => a.name.toLowerCase().includes('team'))?.wallet || allocations[0]?.wallet
+          owner: allocations.find((a: any) => a.name.toLowerCase().includes('team'))?.wallet || allocations[0]?.wallet
         }
       };
 
@@ -106,7 +108,10 @@ export default function TopBar() {
       console.log(JSON.stringify(outputData, null, 2));
       console.log('--------------------------------------');
 
-      alert("Validation Passed! Bundle data logged to console. Ready to Deploy.");
+      // Trigger the actual deployment
+      deploy(outputData).catch(err => {
+        console.error("Deployment Error:", err);
+      });
     }
   };
 
@@ -155,6 +160,57 @@ export default function TopBar() {
           </>
         )}
       </div>
+
+      {/* Deployment Status Modal */}
+      {status.step !== 'idle' && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[9999]">
+          <div className="bg-white rounded-2xl p-8 max-w-sm w-full shadow-2xl border border-gray-100 flex flex-col items-center text-center animate-in fade-in zoom-in duration-300">
+            {status.step === 'success' ? (
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center text-green-600 mb-4">
+                <CheckCircle2 size={32} />
+              </div>
+            ) : status.step === 'error' ? (
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center text-red-600 mb-4">
+                <AlertTriangle size={32} />
+              </div>
+            ) : (
+              <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center text-blue-600 mb-4 relative">
+                <Loader2 size={32} className="animate-spin" />
+              </div>
+            )}
+
+            <h3 className="text-xl font-bold text-gray-900 mb-2">
+              {status.step === 'deploying' && 'Creating Token'}
+              {status.step === 'configuring' && 'Configuring Rules'}
+              {status.step === 'enabling' && 'Going Live'}
+              {status.step === 'success' && 'Deployment Success!'}
+              {status.step === 'error' && 'Deployment Failed'}
+            </h3>
+
+            <p className="text-gray-500 text-sm mb-6">
+              {status.message}
+            </p>
+
+            {status.tokenAddress && (
+              <div className="w-full bg-gray-50 rounded-lg p-3 mb-6 text-left">
+                <span className="text-[10px] uppercase font-bold text-gray-400 block mb-1">Contract Address</span>
+                <code className="text-[11px] text-blue-600 font-mono break-all leading-tight">
+                  {status.tokenAddress}
+                </code>
+              </div>
+            )}
+
+            {(status.step === 'success' || status.step === 'error') && (
+              <button
+                onClick={reset}
+                className="w-full py-3 bg-gray-900 hover:bg-black text-white rounded-xl font-semibold transition-all shadow-lg hover:shadow-xl active:scale-95"
+              >
+                Close
+              </button>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
