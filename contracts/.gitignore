@@ -18,3 +18,7 @@
 
 # Hardhat coverage reports
 /coverage
+
+# Custom
+internal_note.txt
+.env
